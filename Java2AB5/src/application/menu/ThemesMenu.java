@@ -6,11 +6,20 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 
+/**
+ * 
+ * ThemesMenu, welches Menupunkte zum Ändern des Themes bereitstellt.
+ *
+ * @author Markus Suchalla, Cheng-Fu Ye, Dominik Schwabe
+ */
 public class ThemesMenu extends Menu
 {
    private MenuItem caspianItem;
    private MenuItem modenaItem;
 
+   /**
+    * @see {@link Menu#Menu(String)} 
+    */
    public ThemesMenu(TextField textfield)
    {
       super("_Themes");
