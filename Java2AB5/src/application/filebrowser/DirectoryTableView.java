@@ -56,8 +56,11 @@ public class DirectoryTableView extends TableView<FXFile>
       hiddenColumn.setCellValueFactory(new PropertyValueFactory<>("hidden"));
       hiddenColumn.setCellFactory(new CheckBoxTableCellFactory<>());
       hiddenColumn.setPrefWidth(100);
-
-      this.getColumns().addAll(fileColumn, lengthColumn, lastModifiedColumn, hiddenColumn);
+      
+      this.getColumns().add(fileColumn);
+      this.getColumns().add(lengthColumn);
+      this.getColumns().add(lastModifiedColumn);
+      this.getColumns().add(hiddenColumn);
    }
 
    /**
