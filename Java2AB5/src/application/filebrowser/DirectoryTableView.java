@@ -16,9 +16,22 @@ import de.fhswf.fbin.java2fx.entities.FXFile;
 import de.fhswf.fbin.java2fx.tables.CheckBoxTableCellFactory;
 import de.fhswf.fbin.java2fx.tables.LocalDateTimeTableCellFactory;
 import de.fhswf.fbin.java2fx.tables.NumberTableCellFactory;
+import exception.InvalidSourceException;
 
+/**
+ * 
+ * Zeigt Metadaten von Dateien in einem bestimmten Verzeichnis an.
+ *
+ * @author Markus Suchalla, Cheng-Fu Ye, Dominik Schwabe
+ */
 public class DirectoryTableView extends TableView<FXFile>
 {
+   /**
+    * 
+    * Stellt Dateiname, Größe, Änderungsdatum und ob die Datei versteckt ist,
+    * tabellarisch dar.
+    *
+    */
    public DirectoryTableView()
    {
       //Spalte für Dateinamen
@@ -47,8 +60,18 @@ public class DirectoryTableView extends TableView<FXFile>
       this.getColumns().addAll(fileColumn, lengthColumn, lastModifiedColumn, hiddenColumn);
    }
 
+   /**
+    * 
+    * Aktuallisiert, was in der Tabelle angezeigt wird.
+    *
+    * @param directoryPath Pfad zum Directory, von welchem die Dateien angezeigt werden sollen.
+    * @throws Exception
+    */
    public void updateTable(String directoryPath) throws Exception
    {
+      if (directoryPath == null) {
+         throw new InvalidSourceException("updateTable(String directoryPath): Ungültige Null-Referenz zu directoryPath!");
+      }
       ObservableList<FXFile> data = FXCollections.observableArrayList();
       Files.list(Paths.get(directoryPath))
             .map(Path::toFile)      // Konvertierung von Path zu File
