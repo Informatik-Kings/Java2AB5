@@ -1,5 +1,7 @@
 package application;
 
+import java.nio.file.AccessDeniedException;
+
 import application.filebrowser.DirectoryTableView;
 import application.menu.ApplicationMenuBar;
 import de.fhswf.fbin.java2fx.entities.FXFile;
@@ -18,8 +20,14 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * 
+ * MainBorderPane zum Layouten und Testen von {@link DirectoryTableView}, {@link DirectoryTreeView} und {@link ApplicationMenuBar}.
+ *
+ * @author Markus Suchalla, Cheng-Fu Ye, Dominik Schwabe
+ */
 public class MainBorderPane extends BorderPane{
-   
+
    private DirectoryTableView directoryTableView;
 
    public MainBorderPane() throws InvalidSourceException {
@@ -36,33 +44,47 @@ public class MainBorderPane extends BorderPane{
       splitPane.setDividerPositions(0.25);
       DirectoryTreeView directoryTreeView = new DirectoryTreeView();
 
-      
+
       splitPane.getItems().add(directoryTreeView);
       setLeft(directoryTreeView);
       setCenter(splitPane);
-      
+
       this.directoryTableView = new DirectoryTableView();
       splitPane.getItems().add(directoryTableView);
       directoryTreeView.getSelectionModel().selectedItemProperty().addListener(new DirectorySelectionChangeListener());
-      
-      
+
+
    }
-   
+
+   /**
+    * 
+    * Ändert den Inhalt der {@link DirectoryTableView}, anhand des selektierten Ordners. 
+    *
+    * @author Markus Suchalla, Cheng-Fu Ye, Dominik Schwabe
+    */
    private class DirectorySelectionChangeListener implements ChangeListener<TreeItem<FXFile>> {
       @Override
       public void changed(ObservableValue<? extends TreeItem<FXFile>> observable, TreeItem<FXFile> oldValue, TreeItem<FXFile> newValue) {
-          if (newValue != null && newValue.getValue().getFile().isDirectory()) {
-              try {
-                  directoryTableView.updateTable(newValue.getValue().getFile().getPath());
-              } catch (Exception e) {
-                  Alert alert =
-                          new Alert(AlertType.ERROR, "Fehler beim Updaten des Menu-Items! \nSenden Sie den Log an den Entwickler!", ButtonType.OK);
-                  alert.setResizable(true);
-                  alert.showAndWait();
-                  LoggerFX.log(e, getClass().getSimpleName());
-              }
-          }
+         if (newValue != null && newValue.getValue().getFile().isDirectory()) {
+            try {
+               
+               directoryTableView.updateTable(newValue.getValue().getFile().getPath());
+               
+            } catch (AccessDeniedException e) {
+               Alert alert =
+                     new Alert(AlertType.ERROR, "Fehlende Zugriffsberechtigung für den Ordner! \nSenden Sie den Log an den Systemadministrator!", ButtonType.OK);
+               alert.setResizable(true);
+               alert.showAndWait();
+               LoggerFX.log(e, getClass().getSimpleName());
+            } catch (Exception e) {
+               Alert alert =
+                     new Alert(AlertType.ERROR, "Fehler beim Updaten der Tabelle! \nSenden Sie den Log an den Entwickler!", ButtonType.OK);
+               alert.setResizable(true);
+               alert.showAndWait();
+               LoggerFX.log(e, getClass().getSimpleName());
+            }
+         }
       }
-  }
+   }
 
 }
