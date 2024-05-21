@@ -1,7 +1,6 @@
 package de.fhswf.fbin.java2fx.entities;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -27,6 +26,8 @@ public class FXFile
       setLastModified(LocalDateTime.ofEpochSecond(file.lastModified()/1000, 0, ZoneOffset.UTC));
       setLength(file.length());
       setHidden(file.isHidden());
+      setReadable(file.canRead());
+      setWriteable(file.canWrite());
    }
 
    public File getFile() {
@@ -107,6 +108,44 @@ public class FXFile
    public void setHidden(boolean hidden)
    {
       hiddenProperty().set(hidden);
+   }
+   
+   private BooleanProperty readable;
+
+   public BooleanProperty readableProperty()
+   {
+      if (readable == null)
+         readable = new SimpleBooleanProperty(this, "readable");
+      return this.readable;
+   }
+
+   public boolean isReadable()
+   {
+      return readableProperty().get();
+   }
+
+   public void setReadable(boolean readable)
+   {
+      readableProperty().set(readable);
+   }
+   
+   private BooleanProperty writeable;
+
+   public BooleanProperty writeableProperty()
+   {
+      if (writeable == null)
+         writeable = new SimpleBooleanProperty(this, "writeable");
+      return this.writeable;
+   }
+
+   public boolean isWriteable()
+   {
+      return writeableProperty().get();
+   }
+
+   public void setWriteable(boolean writeable)
+   {
+      writeableProperty().set(writeable);
    }
    
    @Override
