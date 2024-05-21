@@ -10,10 +10,12 @@ import exception.InvalidSourceException;
 import exception.LoggerFX;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -53,7 +55,6 @@ public class MainBorderPane extends BorderPane{
       splitPane.getItems().add(directoryTableView);
       directoryTreeView.getSelectionModel().selectedItemProperty().addListener(new DirectorySelectionChangeListener());
 
-
    }
 
    /**
@@ -63,26 +64,45 @@ public class MainBorderPane extends BorderPane{
     * @author Markus Suchalla, Cheng-Fu Ye, Dominik Schwabe
     */
    private class DirectorySelectionChangeListener implements ChangeListener<TreeItem<FXFile>> {
+      Label emptyDirLabel;
+      Label noDirLabel;
       @Override
       public void changed(ObservableValue<? extends TreeItem<FXFile>> observable, TreeItem<FXFile> oldValue, TreeItem<FXFile> newValue) {
-         if (newValue != null && newValue.getValue().getFile().isDirectory()) {
-            try {
+         try {
+            if (newValue != null && newValue.getValue().getFile().isDirectory()) {
                
                directoryTableView.updateTable(newValue.getValue().getFile().getPath());
                
-            } catch (AccessDeniedException e) {
-               Alert alert =
-                     new Alert(AlertType.ERROR, "Fehlende Zugriffsberechtigung für den Ordner! \nSenden Sie den Log an den Systemadministrator!", ButtonType.OK);
-               alert.setResizable(true);
-               alert.showAndWait();
-               LoggerFX.log(e, getClass().getSimpleName());
-            } catch (Exception e) {
-               Alert alert =
-                     new Alert(AlertType.ERROR, "Fehler beim Updaten der Tabelle! \nSenden Sie den Log an den Entwickler!", ButtonType.OK);
-               alert.setResizable(true);
-               alert.showAndWait();
-               LoggerFX.log(e, getClass().getSimpleName());
+               if(emptyDirLabel == null) {
+                  emptyDirLabel = new Label("Leeren Ordner ausgewählt!");
+               }
+               
+               directoryTableView.setPlaceholder(emptyDirLabel);
+               
+            } else {
+               
+               directoryTableView.setItems(FXCollections.observableArrayList());
+               
+               if(noDirLabel == null) {
+                  noDirLabel = new Label("Keinen Ordner ausgewählt!");
+               }
+               
+               directoryTableView.setPlaceholder(noDirLabel);
+               
             }
+            
+         } catch (AccessDeniedException e) {
+            Alert alert =
+                  new Alert(AlertType.ERROR, "Fehlende Zugriffsberechtigung für den Ordner! \nSenden Sie den Log an den Systemadministrator!", ButtonType.OK);
+            alert.setResizable(true);
+            alert.showAndWait();
+            LoggerFX.log(e, getClass().getSimpleName());
+         } catch (Exception e) {
+            Alert alert =
+                  new Alert(AlertType.ERROR, "Fehler beim Updaten der Tabelle! \nSenden Sie den Log an den Entwickler!", ButtonType.OK);
+            alert.setResizable(true);
+            alert.showAndWait();
+            LoggerFX.log(e, getClass().getSimpleName());
          }
       }
    }

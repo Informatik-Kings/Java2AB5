@@ -2,6 +2,7 @@ package application.filebrowser;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -34,6 +35,7 @@ public class DirectoryTableView extends TableView<FXFile>
     */
    public DirectoryTableView()
    {
+      setPlaceholder(new Label("Keinen Ordner ausgewählt!"));
       //Spalte für Dateinamen
       TableColumn<FXFile, String> fileColumn = new TableColumn<>("Datei");
       fileColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
