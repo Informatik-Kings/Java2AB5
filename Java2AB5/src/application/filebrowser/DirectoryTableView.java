@@ -1,7 +1,12 @@
 package application.filebrowser;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+
 import java.io.File;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,20 +16,7 @@ import de.fhswf.fbin.java2fx.entities.FXFile;
 import de.fhswf.fbin.java2fx.tables.CheckBoxTableCellFactory;
 import de.fhswf.fbin.java2fx.tables.LocalDateTimeTableCellFactory;
 import de.fhswf.fbin.java2fx.tables.NumberTableCellFactory;
-import de.fhswf.fbin.java2fx.trees.DirectoryTreeView;
 import exception.InvalidSourceException;
-import exception.LoggerFX;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
  * 
@@ -34,23 +26,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
  */
 public class DirectoryTableView extends TableView<FXFile>
 {
-   DirectoryTreeView directoryTreeView;
-
    /**
     * 
     * Stellt Dateiname, Größe, Änderungsdatum und ob die Datei versteckt ist,
     * tabellarisch dar.
-    * @param directoryTreeView Stellt den Baum tabellarisch dar.
-    * @throws InvalidSourceException Wenn Ungültige Null-Referenz übergeben wurde.
     *
     */
-   public DirectoryTableView(DirectoryTreeView directoryTreeView) throws InvalidSourceException
+   public DirectoryTableView()
    {
-      if(directoryTreeView == null) {
-         throw new InvalidSourceException("DirectoryTableView(DirectoryTreeView directoryTreeView): Ungültige Null-Referenz zu directoryTreeView");
-      }
-      this.directoryTreeView = directoryTreeView;
-      this.directoryTreeView.getSelectionModel().selectedItemProperty().addListener(new DirectorySelectionChangeListener());
       //Spalte für Dateinamen
       TableColumn<FXFile, String> fileColumn = new TableColumn<>("Datei");
       fileColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -67,13 +50,13 @@ public class DirectoryTableView extends TableView<FXFile>
       lastModifiedColumn.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
       lastModifiedColumn.setCellFactory(new LocalDateTimeTableCellFactory<>());
       lastModifiedColumn.setPrefWidth(200);
-
+      
       //Spalte für versteckt
       TableColumn<FXFile, Boolean> hiddenColumn = new TableColumn<>("Versteckt");
       hiddenColumn.setCellValueFactory(new PropertyValueFactory<>("hidden"));
       hiddenColumn.setCellFactory(new CheckBoxTableCellFactory<>());
       hiddenColumn.setPrefWidth(100);
-
+      
       this.getColumns().add(fileColumn);
       this.getColumns().add(lengthColumn);
       this.getColumns().add(lastModifiedColumn);
@@ -82,39 +65,23 @@ public class DirectoryTableView extends TableView<FXFile>
 
    /**
     * 
-    * Ändert den Inhalt der {@link DirectoryTableView}, anhand des selektierten Ordners. 
+    * Aktuallisiert, was in der Tabelle angezeigt wird.
     *
-    * @author Markus Suchalla, Cheng-Fu Ye, Dominik Schwabe
+    * @param directoryPath Pfad zum Directory, von welchem die Dateien angezeigt werden sollen.
+    * @throws Exception
     */
-   private class DirectorySelectionChangeListener implements ChangeListener<TreeItem<FXFile>> {
-      @Override
-      public void changed(ObservableValue<? extends TreeItem<FXFile>> observable, TreeItem<FXFile> oldValue, TreeItem<FXFile> newValue) {
-         if (newValue != null && newValue.getValue().getFile().isDirectory()) {
-            try {
-
-               ObservableList<FXFile> data = FXCollections.observableArrayList();
-               Files.list(Paths.get(newValue.getValue().getFile().getPath()))
-               .map(Path::toFile)      // Konvertierung von Path zu File
-               .filter(File::isFile)   // Filterung von Files
-               .map(FXFile::new)       // Konvertierung von File zu FXFile
-               .forEach(data::add);    // Hinzufügen zur ObservableList
-
-               setItems(data);
-
-            } catch (AccessDeniedException e) {
-               Alert alert =
-                     new Alert(AlertType.ERROR, "Fehlende Zugriffsberechtigung für den Ordner! \nSenden Sie den Log an den Systemadministrator!", ButtonType.OK);
-               alert.setResizable(true);
-               alert.showAndWait();
-               LoggerFX.log(e, getClass().getSimpleName());
-            } catch (Exception e) {
-               Alert alert =
-                     new Alert(AlertType.ERROR, "Fehler beim Updaten der Tabelle! \nSenden Sie den Log an den Entwickler!", ButtonType.OK);
-               alert.setResizable(true);
-               alert.showAndWait();
-               LoggerFX.log(e, getClass().getSimpleName());
-            }
-         }
+   public void updateTable(String directoryPath) throws Exception
+   {
+      if (directoryPath == null) {
+         throw new InvalidSourceException("updateTable(String directoryPath): Ungültige Null-Referenz zu directoryPath!");
       }
+      ObservableList<FXFile> data = FXCollections.observableArrayList();
+      Files.list(Paths.get(directoryPath))
+            .map(Path::toFile)      // Konvertierung von Path zu File
+            .filter(File::isFile)   // Filterung von Files
+            .map(FXFile::new)       // Konvertierung von File zu FXFile
+            .forEach(data::add);    // Hinzufügen zur ObservableList
+
+      this.setItems(data);
    }
 }
