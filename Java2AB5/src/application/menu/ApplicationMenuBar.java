@@ -1,10 +1,5 @@
 package application.menu;
 
-import application.menu.item.CaspianMenuItem;
-import application.menu.item.ExitMenuItem;
-import application.menu.item.AboutMenuItem;
-import application.menu.item.ModenaMenuItem;
-import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextField;
 
@@ -24,14 +19,9 @@ public class ApplicationMenuBar extends MenuBar
     */
    public ApplicationMenuBar(TextField textfield)
    {
-      Menu fileMenu = new Menu("Datei");
-      Menu themesMenu = new Menu("Themes");
-      Menu helpMenu = new Menu("Hilfe");
-
-      fileMenu.getItems().add(new ExitMenuItem(textfield));
-      themesMenu.getItems().addAll(new CaspianMenuItem(textfield),
-            new ModenaMenuItem(textfield));
-      helpMenu.getItems().add(new AboutMenuItem(textfield));
+      FileMenu fileMenu = new FileMenu(textfield);
+      ThemesMenu themesMenu = new ThemesMenu(textfield);
+      HelpMenu helpMenu = new HelpMenu(textfield);
 
       this.getMenus().addAll(fileMenu, themesMenu, helpMenu);
    }
