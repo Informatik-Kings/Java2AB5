@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -25,7 +26,9 @@ public class LocalDateTimeTableCellFactory<S> implements
             if (!empty)
             {
                ZonedDateTime zdt = ZonedDateTime.of(item, ZoneId.systemDefault());
-               setText(zdt.format(DateTimeFormatter.RFC_1123_DATE_TIME));
+               DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"); //Deutsches Format
+               setText(zdt.format(formatter));
+               setAlignment(Pos.TOP_RIGHT); //Rechtsbündig
             }
             else
             {
