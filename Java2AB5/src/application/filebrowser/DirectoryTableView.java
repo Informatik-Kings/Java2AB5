@@ -57,10 +57,24 @@ public class DirectoryTableView extends TableView<FXFile>
       hiddenColumn.setCellFactory(new CheckBoxTableCellFactory<>());
       hiddenColumn.setPrefWidth(100);
       
+      //Spalte für Lesezugriff
+      TableColumn<FXFile, Boolean> readableColumn = new TableColumn<>("Lesezugriff");
+      readableColumn.setCellValueFactory(new PropertyValueFactory<>("readable"));
+      readableColumn.setCellFactory(new CheckBoxTableCellFactory<>());
+      readableColumn.setPrefWidth(100);
+      
+      //Spalte für Schreibzugriff
+      TableColumn<FXFile, Boolean> writeableColumn = new TableColumn<>("Schreibzugriff");
+      writeableColumn.setCellValueFactory(new PropertyValueFactory<>("writeable"));
+      writeableColumn.setCellFactory(new CheckBoxTableCellFactory<>());
+      writeableColumn.setPrefWidth(100);
+      
       this.getColumns().add(fileColumn);
       this.getColumns().add(lengthColumn);
       this.getColumns().add(lastModifiedColumn);
       this.getColumns().add(hiddenColumn);
+      this.getColumns().add(readableColumn);
+      this.getColumns().add(writeableColumn);
    }
 
    /**
