@@ -66,37 +66,40 @@ public class MainBorderPane extends BorderPane{
    private class DirectorySelectionChangeListener implements ChangeListener<TreeItem<FXFile>> {
       Label emptyDirLabel;
       Label noDirLabel;
+      Label permsDeniedLabel;
       @Override
       public void changed(ObservableValue<? extends TreeItem<FXFile>> observable, TreeItem<FXFile> oldValue, TreeItem<FXFile> newValue) {
          try {
             if (newValue != null && newValue.getValue().getFile().isDirectory()) {
-               
+
                directoryTableView.updateTable(newValue.getValue().getFile().getPath());
-               
+
                if(emptyDirLabel == null) {
                   emptyDirLabel = new Label("Leeren Ordner ausgewählt!");
                }
-               
+
                directoryTableView.setPlaceholder(emptyDirLabel);
-               
+
             } else {
-               
+
                directoryTableView.setItems(FXCollections.observableArrayList());
-               
+
                if(noDirLabel == null) {
                   noDirLabel = new Label("Keinen Ordner ausgewählt!");
                }
-               
+
                directoryTableView.setPlaceholder(noDirLabel);
-               
+
             }
-            
+
          } catch (AccessDeniedException e) {
-            Alert alert =
-                  new Alert(AlertType.ERROR, "Fehlende Zugriffsberechtigung für den Ordner! \nSenden Sie den Log an den Systemadministrator!", ButtonType.OK);
-            alert.setResizable(true);
-            alert.showAndWait();
-            LoggerFX.log(e, getClass().getSimpleName());
+            directoryTableView.setItems(FXCollections.observableArrayList());
+
+            if(permsDeniedLabel == null) {
+               permsDeniedLabel = new Label("Fehlende Zugriffsberechtigung für den Ordner! \nWenden Sie sich an Ihren Systemadministrator!");
+            }
+
+            directoryTableView.setPlaceholder(permsDeniedLabel);
          } catch (Exception e) {
             Alert alert =
                   new Alert(AlertType.ERROR, "Fehler beim Updaten der Tabelle! \nSenden Sie den Log an den Entwickler!", ButtonType.OK);
